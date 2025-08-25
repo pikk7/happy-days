@@ -1,24 +1,29 @@
+// src/components/Dashboard.tsx
 import React from "react";
+import FriendPanel from "./FriendPanel";
+import Streak from "./Streak";
+import PostForm from "./PostForm";
 
 interface DashboardProps {
-  posts: { text: string; createdAt: any; userId: string }[];
+  userId: string;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ posts }) => {
+const Dashboard: React.FC<DashboardProps> = ({ userId }) => {
   return (
-    <div className="space-y-2">
-      {posts.length === 0 ? (
-        <p>Nincsenek posztok még.</p>
-      ) : (
-        posts.map((post, i) => (
-          <div key={i} className="border p-2 rounded bg-white">
-            <p>{post.text}</p>
-            <small className="text-gray-500">
-              {post.createdAt.toDate().toLocaleString()}
-            </small>
-          </div>
-        ))
-      )}
+    <div className="min-h-screen bg-gray-100 p-4 space-y-6">
+      {/* Navbar */}
+      <nav className="bg-white p-4 rounded shadow mb-4">
+        <h1 className="text-xl font-bold">Happy Days</h1>
+      </nav>
+
+      {/* Streak panel */}
+      <Streak userId={userId} />
+
+      {/* Add Post panel */}
+      <PostForm userId={userId} />
+
+      {/* Friend Panel */}
+      <FriendPanel userId={userId} />
     </div>
   );
 };

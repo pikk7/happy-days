@@ -7,6 +7,7 @@ import {
   query,
   addDoc,
   orderBy,
+  serverTimestamp,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -40,10 +41,21 @@ export const postsCollection = collection(db, "posts");
 
 export const postsQuery = query(postsCollection, orderBy("createdAt", "desc"));
 
-export const addPost = async (text: string, userId: string) => {
-  await addDoc(postsCollection, {
-    text,
-    userId,
-    createdAt: new Date(),
-  });
+export const addPost = async (
+  userId: string,
+  content: string,
+  shared: boolean
+) => {
+  try {
+    const docRef = await addDoc(collection(db, "posts"), {
+      userId,
+      content,
+      shared,
+      createdAt: serverTimestamp(),
+    });
+    return docRef.id;
+  } catch (error) {
+    console.error("Error adding post:", error);
+    throw error;
+  }
 };

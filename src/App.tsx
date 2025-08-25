@@ -1,80 +1,75 @@
-import { useState, useEffect } from "react";
-import { auth, postsQuery } from "./firebase";
-import PostForm from "./components/PostForm";
+// src/App.tsx
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
-import Streak from "./components/Streak";
-import { onSnapshot } from "firebase/firestore";
-import type { User } from "firebase/auth";
-import AuthButton from "./components/AuthButton";
-import Navbar from "./components/Navbar";
+import ActivityFeed from "./components/ActivityFeed";
+import Profile from "./components/Profile";
+import StreakAndStats from "./components/StreakAndStats";
+import { useAuthState } from "./hooks/useAuth";
+import { db } from "./firebase";
+import { doc, getDoc } from "firebase/firestore";
 
-function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [posts, setPosts] = useState<
-    { text: string; createdAt: any; userId: string }[]
-  >([]);
-  const [streak, setStreak] = useState<number>(0);
+const App: React.FC = () => {
+  const { user } = useAuthState();
+  const [friends, setFriends] = useState<string[]>([]);
 
-  // Firebase Auth state figyelése
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // Firestore posztok figyelése
   useEffect(() => {
     if (!user) return;
-    const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
-      const allPosts: any[] = [];
-      snapshot.forEach((doc) => allPosts.push(doc.data()));
-      setPosts(allPosts);
-      calculateStreak(allPosts, user.uid);
-    });
-    return () => unsubscribe();
+
+    const fetchFriends = async () => {
+      const userRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(userRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setFriends(data.friends || []);
+      }
+    };
+
+    fetchFriends();
   }, [user]);
 
-  // Egyszerű streak számítás
-  const calculateStreak = (allPosts: any[], userId: string) => {
-    const userPosts = allPosts
-      .filter((p) => p.userId === userId)
-      .sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-
-    let count = 0;
-    let today = new Date();
-    for (const post of userPosts) {
-      const postDate = post.createdAt.toDate();
-      if (
-        postDate.toDateString() === today.toDateString() ||
-        postDate.toDateString() ===
-          new Date(today.getTime() - 86400000).toDateString()
-      ) {
-        count++;
-        today = postDate;
-      } else {
-        break;
-      }
-    }
-    setStreak(count);
-  };
-
-  if (!user) return <AuthButton onLogin={setUser} />;
+  if (!user) return <p>Bejelentkezés szükséges...</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <header className="text-center mb-4">
-        <h1 className="text-3xl font-bold">100 Happy Days Challenge</h1>
-      </header>
-      <Navbar userEmail={user.email} />
+    <Router>
+      <div className="min-h-screen flex flex-col">
+        {/* Navbar */}
+        <nav className="bg-blue-600 text-white p-4 flex justify-between items-center">
+          <h1 className="text-lg font-bold">Happy Days</h1>
+          <div className="space-x-4">
+            <Link to="/" className="hover:underline">
+              Dashboard
+            </Link>
+            <Link to="/feed" className="hover:underline">
+              Aktivitás
+            </Link>
+            <Link to="/profile" className="hover:underline">
+              Profil
+            </Link>
+            <Link to="/stats" className="hover:underline">
+              Streak & Stats
+            </Link>
+          </div>
+        </nav>
 
-      <main className="max-w-xl mx-auto space-y-6">
-        <Streak streak={streak} />
-        <PostForm userId={user.uid} />
-        <Dashboard posts={posts} />
-      </main>
-    </div>
+        {/* Main content */}
+        <main className="flex-1 p-4 bg-gray-50">
+          <Routes>
+            <Route path="/" element={<Dashboard userId={user.uid} />} />
+            <Route
+              path="/feed"
+              element={<ActivityFeed userId={user.uid} friends={friends} />}
+            />
+            <Route path="/profile" element={<Profile userId={user.uid} />} />
+            <Route
+              path="/stats"
+              element={<StreakAndStats userId={user.uid} />}
+            />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
-}
+};
 
 export default App;

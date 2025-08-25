@@ -6,25 +6,40 @@ interface PostFormProps {
 }
 
 const PostForm: React.FC<PostFormProps> = ({ userId }) => {
-  const [text, setText] = useState("");
+  const [content, setContent] = useState("");
+  const [shared, setShared] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!text.trim()) return;
-    await addPost(text, userId);
-    setText("");
+    if (!content.trim()) return;
+
+    await addPost(userId, content, shared);
+
+    setContent("");
+    setShared(false);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col space-y-2">
+    <form onSubmit={handleSubmit} className="space-y-2">
       <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Miért vagy ma boldog?"
-        className="border p-2 rounded"
+        className="w-full p-2 border rounded"
+        placeholder="Mitől voltál boldog ma?"
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
       />
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-        Posztolj
+      <label className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          checked={shared}
+          onChange={(e) => setShared(e.target.checked)}
+        />
+        <span>Megosztom másokkal</span>
+      </label>
+      <button
+        type="submit"
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Posztol
       </button>
     </form>
   );

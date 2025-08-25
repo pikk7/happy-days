@@ -17,7 +17,7 @@ import {
   uploadBytes,
   getDownloadURL,
 } from "firebase/storage";
-import type { Post, Visibility } from "../types/post";
+import type { Post, Visibility } from "../types/Post";
 import { todayKey } from "../lib/date";
 
 export async function getMyLastPostDate(uid: string) {
@@ -38,7 +38,7 @@ export async function setMyLastPostDate(uid: string, dateKey: string) {
 export async function createPost(params: {
   uid: string;
   userName: string;
-  text: string;
+  content: string;
   imageUrl: string | null;
   visibility: Visibility;
 }) {
@@ -48,7 +48,7 @@ export async function createPost(params: {
     userId: params.uid,
     userName: params.userName,
     dateKey,
-    text: params.text || "",
+    content: params.content || "",
     imageUrl: params.imageUrl || null,
     visibility: params.visibility,
     hearts: 0,
