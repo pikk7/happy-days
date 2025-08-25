@@ -1,0 +1,12 @@
+specVersion: "v1"
+serviceId: "happy-days"
+location: "us-central1"
+schema:
+  source: "./schema"
+  datasource:
+    postgresql:
+      database: "fdcdb"
+      cloudSql:
+        instanceId: "happy-days-fdc"
+      # schemaValidation: "COMPATIBLE"
+connectorDirs: ["./example"]
