@@ -1,32 +1,15 @@
 // src/App.tsx
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import ActivityFeed from "./components/ActivityFeed";
 import Profile from "./components/Profile";
 import StreakAndStats from "./components/StreakAndStats";
 import { useAuthState } from "./hooks/useAuth";
-import { db } from "./firebase";
-import { doc, getDoc } from "firebase/firestore";
+import FriendPanel from "./components/FriendPanel";
 
 const App: React.FC = () => {
   const { user } = useAuthState();
-  const [friends, setFriends] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (!user) return;
-
-    const fetchFriends = async () => {
-      const userRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(userRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setFriends(data.friends || []);
-      }
-    };
-
-    fetchFriends();
-  }, [user]);
 
   if (!user) return <p>Bejelentkezés szükséges...</p>;
 
@@ -40,8 +23,8 @@ const App: React.FC = () => {
             <Link to="/" className="hover:underline">
               Dashboard
             </Link>
-            <Link to="/feed" className="hover:underline">
-              Aktivitás
+            <Link to="/friends" className="hover:underline">
+              Barátok
             </Link>
             <Link to="/profile" className="hover:underline">
               Profil
@@ -55,11 +38,8 @@ const App: React.FC = () => {
         {/* Main content */}
         <main className="flex-1 p-4 bg-gray-50">
           <Routes>
-            <Route path="/" element={<Dashboard userId={user.uid} />} />
-            <Route
-              path="/feed"
-              element={<ActivityFeed userId={user.uid} friends={friends} />}
-            />
+            <Route path="/" element={<Dashboard user={user} />} />
+            <Route path="/friends" element={  <FriendPanel userId={user.uid} />} />
             <Route path="/profile" element={<Profile userId={user.uid} />} />
             <Route
               path="/stats"

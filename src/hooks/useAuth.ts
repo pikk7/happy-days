@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { auth, googleProvider } from "../firebase";
 import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
-
-export type MiniUser = { uid: string; name: string; photo: string | null };
+import type { User } from "../types/User";
 
 export function useAuthState() {
-  const [user, setUser] = useState<MiniUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,8 +13,9 @@ export function useAuthState() {
       else
         setUser({
           uid: u.uid,
-          name: u.displayName || "Névtelen",
-          photo: u.photoURL || null,
+          displayName: u.displayName || "Névtelen",
+          email: u.email || "",
+          photoURL: u.photoURL || "",
         });
       setLoading(false);
     });

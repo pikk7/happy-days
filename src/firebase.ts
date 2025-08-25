@@ -9,6 +9,7 @@ import {
   orderBy,
   serverTimestamp,
 } from "firebase/firestore";
+import type { Visibility } from "./types/Post";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDk89URaRhCWdQJQrSLN0OquN2Q4HVFpZE",
@@ -44,13 +45,15 @@ export const postsQuery = query(postsCollection, orderBy("createdAt", "desc"));
 export const addPost = async (
   userId: string,
   content: string,
-  shared: boolean
+  visibility: Visibility,
+  displayName: string
 ) => {
   try {
     const docRef = await addDoc(collection(db, "posts"), {
       userId,
       content,
-      shared,
+      visibility,
+      displayName,
       createdAt: serverTimestamp(),
     });
     return docRef.id;

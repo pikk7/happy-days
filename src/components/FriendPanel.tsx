@@ -11,18 +11,13 @@ import {
   arrayRemove,
   getDoc,
 } from "firebase/firestore";
+import type { User } from "../types/User";
 
 interface FriendPanelProps {
   userId: string;
 }
 
-interface User {
-  uid?: string; // dokumentum ID
-  displayName: string;
-  email: string;
-  friends?: string[];
-  friendRequests?: string[];
-}
+
 
 const FriendPanel: React.FC<FriendPanelProps> = ({ userId }) => {
   const [friendEmail, setFriendEmail] = useState("");
@@ -141,6 +136,7 @@ const FriendPanel: React.FC<FriendPanelProps> = ({ userId }) => {
       <div className="space-y-2">
         <h2 className="font-bold">Barát keresése</h2>
         <input
+          name="friendEmail"
           type="email"
           placeholder="Barát email"
           value={friendEmail}

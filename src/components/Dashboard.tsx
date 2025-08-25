@@ -1,14 +1,15 @@
 // src/components/Dashboard.tsx
 import React from "react";
-import FriendPanel from "./FriendPanel";
 import Streak from "./Streak";
 import PostForm from "./PostForm";
+import type { User } from "../types/User";
+import ActivityFeed from "./ActivityFeed";
 
 interface DashboardProps {
-  userId: string;
+  user: User;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ userId }) => {
+const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   return (
     <div className="min-h-screen bg-gray-100 p-4 space-y-6">
       {/* Navbar */}
@@ -17,13 +18,13 @@ const Dashboard: React.FC<DashboardProps> = ({ userId }) => {
       </nav>
 
       {/* Streak panel */}
-      <Streak userId={userId} />
+      <Streak userId={user.uid} />
 
       {/* Add Post panel */}
-      <PostForm userId={userId} />
+      <PostForm user={user} />
 
-      {/* Friend Panel */}
-      <FriendPanel userId={userId} />
+      {/* ActivityFeed */}
+      <ActivityFeed userId={user.uid} />
     </div>
   );
 };

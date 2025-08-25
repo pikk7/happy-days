@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import type { User } from "./User";
 
 export type Visibility = "public" | "friends" | "private";
 
@@ -12,3 +13,5 @@ export interface Post {
   visibility: Visibility;
   imageUrl?: string; // ha lesz kép
 }
+
+export type PostWithAuthor = Post & { author: User };
