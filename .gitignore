@@ -26,5 +26,13 @@ yarn-error.log*
 
 # Environment files (local configs)
 /.env.*
+
+#I am stupid for the gitignore
 node_modules/
 dist/
+
+node_modules
+dist
+
+/node_modules/
+/dist/
